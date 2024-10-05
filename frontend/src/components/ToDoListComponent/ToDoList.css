@@ -1,0 +1,76 @@
+.ToDoList{
+  width: 90%;
+  height: 40vh;
+ display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 10px;
+  background-color: #1a1a2e;
+}
+
+.ToDoList-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 5vh;
+  margin: 10px;
+}
+
+.ToDoList-title{
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.ToDoList-buttons{
+  display: flex;
+  gap: 10px;
+
+  .ToDoList-button{
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover{
+      background-color: #0b0b1f;
+    }
+  }
+
+  .supprimer{
+    background-color: #ff4b5c;
+    color: white;
+
+    &:hover{
+      background-color: #ff0000;
+    }
+  }
+
+  .editer{
+    background-color: #00b894;
+    color: white;
+
+    &:hover{
+      background-color: #00a86b;
+    }
+  }
+}
+
+.ToDoList-content{
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.ToDoList-tags{
+  display: flex;
+  gap: 10px;
+  margin: 10px;
+}
+
+.ToDoList-tag{
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: #0b0b1f;
+  color: white;
+  font-size: 0.8rem;
+}
