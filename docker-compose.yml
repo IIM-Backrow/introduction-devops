@@ -2,32 +2,36 @@ version: "3.7"
 
 services:
   frontend:
-    # TODO: Thomas
+      build:
+          context: ./frontend
+          target: production
+      ports:
+          - "0.0.0.0:3000:80"
 
-  backend:
+  #backend:
     # TODO: Quentin
 
-  proxy:
+  #proxy:
     # TODO: Marianne
 
   # admin:
   # TODO: Marianne
 
-  database:
+  #database:
     # TODO: Quentin
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: backrow-phpmyadmin
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - PMA_HOST=database
-    ports:
-      - "8081:80"
-    depends_on:
-      - database
-    networks:
-      - backrow-network
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin
+  #   container_name: backrow-phpmyadmin
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  #     - PMA_HOST=database
+  #   ports:
+  #     - "8081:80"
+  #   depends_on:
+  #     - database
+  #   networks:
+  #     - backrow-network
 
 networks:
   backrow-network:

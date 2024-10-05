@@ -1,0 +1,11 @@
+services:
+    web:
+        build:
+            context: ./frontend
+            target: development
+        ports:
+            - "0.0.0.0:3000:3000"
+        volumes:
+            - ./frontend:/data/app
+        stdin_open: true
+        tty: true
