@@ -1,5 +1,5 @@
 # Utilise l'image de Node.js comme image de base
-FROM node:14
+FROM node:20-alpine AS build
 
 # Définit le répertoire de travail
 WORKDIR /app
@@ -16,5 +16,12 @@ COPY ./backend .
 # Expose le port que votre application utilise
 EXPOSE 3000
 
-# Commande pour démarrer l'application
-CMD ["npm", "start"]
+
+
+
+FROM node:20-alpine AS production
+WORKDIR /app
+COPY ./package*.json ./
+RUN npm ci --omit=dev
+COPY . .
+ENTRYPOINT ["npm", "start"]

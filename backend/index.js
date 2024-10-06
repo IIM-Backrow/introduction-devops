@@ -4,12 +4,13 @@ const app = express();
 
 app.use(express.json());
 
+
 // Configuration de la connexion MySQL
 const db = mysql.createConnection({
-    host: 'database', // Le nom du service MySQL défini dans docker-compose
-    user: 'root',
-    password: 'root',
-    database: 'backrow'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 // Connexion à la base de données
@@ -19,6 +20,24 @@ db.connect((err) => {
         return;
     }
     console.log('Connecté à la base de données MySQL');
+
+    // Créer la table `blogs` si elle n'existe pas déjà
+    const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS blogs (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            content VARCHAR(255) NOT NULL,
+            tags varchar(255) NOT NULL
+        )
+    `;
+
+    db.query(createTableQuery, (err, result) => {
+        if (err) {
+            console.error('Erreur lors de la création de la table :', err);
+            return;
+        }
+        console.log('Table `blogs` prête à l\'emploi');
+    });
 });
 
 
@@ -34,7 +53,7 @@ app.get('/blogs', (req, res) => {
 });
 
 // Récupérer un article spécifique par son ID
-app.get('/blog/:id', (req, res) => {
+app.get('/blogs/:id', (req, res) => {
     const postId = req.params.id;
     const query = 'SELECT * FROM blogs WHERE id = ?';
     db.query(query, [postId], (err, result) => {
@@ -49,7 +68,7 @@ app.get('/blog/:id', (req, res) => {
 });
 
 // Créer un nouvel article
-app.post('/createBlog', (req, res) => {
+app.post('/blogs', (req, res) => {
     const { name, content, tags } = req.body;
     const query = "INSERT INTO `blogs` (`name`, `content`, `tags`) VALUES (?, ?, ?)";
     db.query(query, [name, content, JSON.stringify(tags)], (err, result) => {
@@ -61,7 +80,7 @@ app.post('/createBlog', (req, res) => {
 });
 
 // Mettre à jour un article existant
-app.put('/updateBlog/:id', (req, res) => {
+app.put('/blogs/:id', (req, res) => {
     const postId = req.params.id;
     const { name, content, tags } = req.body;
     const query = 'UPDATE blogs SET name = ?, content = ?, tags = ? WHERE id = ?';
@@ -77,7 +96,7 @@ app.put('/updateBlog/:id', (req, res) => {
 });
 
 // Supprimer un article
-app.delete('/deleteBlog/:id', (req, res) => {
+app.delete('/blogs/:id', (req, res) => {
     const postId = req.params.id;
     const query = 'DELETE FROM blogs WHERE id = ?';
     db.query(query, [postId], (err, result) => {
