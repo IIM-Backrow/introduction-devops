@@ -34,10 +34,10 @@ const connectToDatabase = () => {
     }
 };
 
-connectToDatabase();
-
 // Connexion à la base de données
 try {
+    connectToDatabase();
+
     db.connect((err) => {
         if (err) {
             console.error('Erreur de connexion à MySQL :', err);
