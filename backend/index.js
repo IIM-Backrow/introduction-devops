@@ -4,25 +4,51 @@ const app = express();
 
 app.use(express.json());
 
-
 // Configuration de la connexion MySQL
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-});
+let db = null;
+let tryCount = 0;
+
+const connectToDatabase = () => {
+    if (tryCount >= 5) {
+        console.error('Impossible de se connecter à la base de données MySQL');
+        process.exit(1);
+    }
+
+    console.log('Tentative de connexion à la base de données MySQL');
+    console.log('Host:', process.env.MYSQL_HOST);
+    console.log('User:', process.env.MYSQL_USER);
+    console.log('Database:', process.env.MYSQL_DATABASE);
+
+    try {
+        db = mysql.createConnection({
+            host: process.env.MYSQL_HOST,
+            user: process.env.MYSQL_USER,
+            password: process.env.MYSQL_PASSWORD,
+            database: process.env.MYSQL_DATABASE
+        });
+    } catch (err) {
+        console.error('Erreur lors de la connexion à MySQL :', err);
+        tryCount++;
+        setTimeout(connectToDatabase, 2000);
+        return
+    }
+};
 
 // Connexion à la base de données
-db.connect((err) => {
-    if (err) {
-        console.error('Erreur de connexion à MySQL :', err);
-        return;
-    }
-    console.log('Connecté à la base de données MySQL');
+try {
+    connectToDatabase();
 
-    // Créer la table `blogs` si elle n'existe pas déjà
-    const createTableQuery = `
+    db.connect((err) => {
+        if (err) {
+            console.error('Erreur de connexion à MySQL :', err);
+            tryCount++;
+            setTimeout(connectToDatabase, 2000);
+            return;
+        }
+        console.log('Connecté à la base de données MySQL');
+
+        // Créer la table `blogs` si elle n'existe pas déjà
+        const createTableQuery = `
         CREATE TABLE IF NOT EXISTS blogs (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
@@ -31,14 +57,20 @@ db.connect((err) => {
         )
     `;
 
-    db.query(createTableQuery, (err, result) => {
-        if (err) {
-            console.error('Erreur lors de la création de la table :', err);
-            return;
-        }
-        console.log('Table `blogs` prête à l\'emploi');
+        db.query(createTableQuery, (err, result) => {
+            if (err) {
+                console.error('Erreur lors de la création de la table :', err);
+                return;
+            }
+            console.log('Table `blogs` prête à l\'emploi');
+        });
     });
-});
+} catch (err) {
+    console.error('Erreur lors de la connexion à MySQL :', err);
+    tryCount++;
+    setTimeout(connectToDatabase, 2000);
+    return;
+}
 
 
 // Récupérer tous les articles du blog

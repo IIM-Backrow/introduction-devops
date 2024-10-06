@@ -8,23 +8,23 @@ Ce cours a pour but de présenter les concepts de base du DevOps, avec Docker.
 
 ## Installation
 
-Pour lancer le projet, il suffit de cloner le repository et de lancer la commande suivante:
+Pour installer le projet, il suffit de cloner le dépôt git et de lancer un des scripts.
 
-```bash
-docker-compose up -d
-```
+### start.sh
 
-Une fois le projet lancé, le serveur web est accessible à l'adresse suivante: [http://localhost:8080](http://localhost:8080)
+Le script `start.sh` permet build et run le projet en production.
 
-Pour arrêter le projet, il suffit de lancer la commande suivante:
+### start-dev.sh
 
-```bash
-docker-compose down
-```
+Le script `start-dev.sh` permet build et run le projet en mode développement.
+
+Ce mode permet de monter les différents projets en tant que volumes, pour permettre une modification en temps réel des fichiers.
 
 ## Utilisation
 
-Le projet est ensuite accessible à l'adresse suivante: [http://localhost:8080](http://localhost:8080)
+Une fois le projet lancé, il suffit d'ouvrir un navigateur et de se rendre à l'adresse `http://localhost:80` (production) ou `http://localhost:3000` (développement).
+
+> Note: Les differents projet sont accessibles sur les ports 3000, 3001, 3002... en mode développement pour simplifier le débuggage.
 
 ## Auteur
 
