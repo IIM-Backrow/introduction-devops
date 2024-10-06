@@ -1,11 +1,68 @@
 services:
-    web:
+    proxy:
+        image: nginx:latest
+        ports:
+            - "0.0.0.0:3000:80" # Expose port 3000 as the main port
+        volumes:
+            - ./proxy/nginx.dev.conf:/etc/nginx/nginx.conf
+        networks:
+            - backrow-network
+        depends_on:
+            - frontend
+            - backend
+
+    frontend:
         build:
             context: ./frontend
             target: development
         ports:
-            - "0.0.0.0:3000:3000"
+            - "0.0.0.0:3001:3000" # Expose port 3000 to host for debugging
         volumes:
             - ./frontend:/data/app
-        stdin_open: true
-        tty: true
+        networks:
+            - backrow-network
+
+    backend:
+        build:
+            context: ./backend
+            target: development
+        ports:
+            - "0.0.0.0:3002:3000" # Expose port 3000 to host for debugging
+        env_file:
+            - .env
+        volumes:
+            - ./backend:/app/src
+        depends_on:
+            - database
+        networks:
+            - backrow-network
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        env_file:
+            - .env
+        environment:
+            PMA_USER: root
+            PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            PMA_HOST: ${MYSQL_HOST}
+        ports:
+            - "0.0.0.0:3003:80" # Expose port 80 to host for debugging
+        depends_on:
+            - database
+        networks:
+            - backrow-network
+
+    database:
+        image: mysql:8
+        env_file:
+            - .env
+        ports:
+            - "0.0.0.0:3004:3306" # Expose port 3306 to host for debugging
+        volumes:
+            - ./database:/var/lib/mysql
+        networks:
+            - backrow-network
+
+networks:
+    backrow-network:
+        driver: bridge
