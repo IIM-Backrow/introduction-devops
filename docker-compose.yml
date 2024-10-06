@@ -1,11 +1,27 @@
 version: "3.7"
 
 services:
-  frontend:
+  # frontend:
     # TODO: Thomas
 
   backend:
-    # TODO: Quentin
+    # image: node:20
+    build: 
+      context: ./backend
+      target: production
+    container_name: backrow-backend
+    working_dir: /app
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    # command: npm start
+    # ports:
+    #   - "3000:3000"
+    networks:
+      - backrow-network
+    depends_on:
+      - database
 
   proxy:
     image: nginx:latest
@@ -21,14 +37,26 @@ services:
       - backend
 
   database:
-    # TODO: Quentin
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./database:/var/lib/mysql
+    networks:
+      - backrow-network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: backrow-phpmyadmin
+    env_file:
+      - .env
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - PMA_HOST=database
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      PMA_HOST: ${PMA_HOST}
     ports:
       - "8081:80"
     depends_on:
