@@ -8,10 +8,17 @@ services:
     # TODO: Quentin
 
   proxy:
-    # TODO: Marianne
-
-  # admin:
-  # TODO: Marianne
+    image: nginx:latest
+    container_name: backrow-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - backrow-network
+    depends_on:
+      - frontend
+      - backend
 
   database:
     # TODO: Quentin
